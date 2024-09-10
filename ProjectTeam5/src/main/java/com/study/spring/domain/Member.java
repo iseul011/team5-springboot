@@ -16,6 +16,7 @@ public class Member {
 	private String pass;
 	@NonNull
 	private String nickname;
+	private String name;
 	private String phone;
 	private String birthday;
 	private String email;
@@ -27,5 +28,7 @@ public class Member {
 	//사진 추가 경로
 	private String imgName;
 	private String imgPath;	
+	
+	private String comments;
 	
 }

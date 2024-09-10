@@ -1,6 +1,7 @@
 package com.study.spring.service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,21 +21,27 @@ public class BoardService {
     private final String uploadDir = System.getProperty("user.dir") + "/uploadedFiles";
 
     //사진이 있는 경우
-    public void write(Board board, MultipartFile img) throws Exception {
+    public void write(Board board, MultipartFile[] img) throws Exception {
         // 파일 저장 경로 설정
         File dir = new File(uploadDir);
+        List<String> path = new ArrayList<String>();
+        List<String> name = new ArrayList<String>();
         if (!dir.exists()) {
             dir.mkdirs();  // 디렉토리가 없으면 생성
         }
-
-        String fileName = UUID.randomUUID().toString() + "_" + img.getOriginalFilename();
-        File saveFile = new File(dir, fileName);
-        img.transferTo(saveFile);
-
-        // 파일 경로 저장
-        board.setImgName(fileName);
-        board.setImgPath("/files/" + fileName);
-
+        for(int i=0 ; i<img.length;i++) {
+	        String fileName = UUID.randomUUID().toString() + "_" + img[i].getOriginalFilename();
+	        File saveFile = new File(dir, fileName);
+	        img[i].transferTo(saveFile);
+	        path.add("/files/" + fileName);
+	        name.add(fileName);
+	        // 파일 경로 저장
+	        System.out.println("보드서비스 여러장 업로드 board : " + img[i]+board);
+        }
+//        board.setImgName(fileName);
+//        board.setImgPath("/files/" + fileName);
+        board.setImgName(name);
+        board.setImgPath(path);
         boardRepository.save(board);
     }
     
@@ -53,4 +60,59 @@ public class BoardService {
 		return boardRepository.findById(bNum);
 		
 	}
+	
+	public void deleteBoard(Long bnum) {
+		boardRepository.deleteById(bnum);
+		
+	}
+
+	//이미지가 없는 경우 수정
+	public void updateBoard(Board board) {
+		Board beforeBoard = boardRepository.findById(board.getBNum()).get();
+		
+		beforeBoard.setBTitle(board.getBTitle());
+		beforeBoard.setBContent(board.getBContent());
+		beforeBoard.setImgName(board.getImgName());
+		beforeBoard.setImgPath(board.getImgPath());
+		
+		boardRepository.save(beforeBoard);
+		
+		
+	}
+	
+	//이미지가 있는 경우 수정
+	public void updateBoard(Board board, MultipartFile[] images) throws Exception {
+	    Board beforeBoard = boardRepository.findById(board.getBNum()).get();
+
+	    // 기존 데이터를 업데이트
+	    beforeBoard.setBTitle(board.getBTitle());
+	    beforeBoard.setBContent(board.getBContent());
+
+	    // 이미지가 있으면 새 이미지 저장
+	    if (images != null && images.length > 0) {
+	        File dir = new File(uploadDir);
+	        List<String> path = new ArrayList<>();
+	        List<String> name = new ArrayList<>();
+	        
+	        if (!dir.exists()) {
+	            dir.mkdirs();  // 디렉토리가 없으면 생성
+	        }
+	        
+	        // 새 이미지 저장 및 경로 저장
+	        for (MultipartFile image : images) {
+	            String fileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+	            File saveFile = new File(dir, fileName);
+	            image.transferTo(saveFile);
+	            path.add("/files/" + fileName);
+	            name.add(fileName);
+	        }
+	        
+	        // 기존 이미지 대체 (기존 이미지를 덮어씌움)
+	        beforeBoard.setImgName(name);
+	        beforeBoard.setImgPath(path);
+	    }
+
+	    boardRepository.save(beforeBoard);
+	}
+	
 }
