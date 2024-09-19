@@ -11,6 +11,14 @@ import com.study.spring.domain.Member;
 public interface MemberRepository extends JpaRepository<Member, String>{
 	List<Member> findByNicknameContaining(String keyword);
 	
+
 	// 아이디 존재 여부 확인 메서드
     boolean existsByMemId(String memId);
+
+	List<Member> findByNameAndBirthdayAndPhone(String name, String birthday, String phone);
+
+	List<Member> findByMemIdAndNameAndBirthdayAndPhone(String userId, String name, String birthday, String phone);
+
+	// 찜기능 아이디 가져오기
+	Member findByNickname(String nickname);
 }
