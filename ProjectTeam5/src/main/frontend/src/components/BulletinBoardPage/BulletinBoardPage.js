@@ -1,4 +1,3 @@
-// BulletinBoardPage.js
 import React, { useEffect, useState } from 'react';
 import './BulletinBoardPage.css';
 import axios from 'axios';
@@ -60,7 +59,7 @@ function BulletinBoardPage({hostId}) {
       <div className="bulletin-board-container">
       <div className="posts-grid">
         {images.map((post) => (
-          <div key={post.bNum} className="post-card" onClick={() => handleImageClick(post.bnum)}>
+          <div key={post.bNum} className="post-card" onClick={() => handleImageClick(post.bnum)}style={{ cursor: 'pointer' }}>
             <img src={post.imgPath[0]} alt={post.btitle} className="post-image" />
             <div className="post-content">
               <h3 className="post-title">{post.btitle}</h3>
