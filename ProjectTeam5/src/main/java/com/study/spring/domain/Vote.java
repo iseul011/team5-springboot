@@ -30,16 +30,13 @@ public class Vote {
     private String voteTitle;  // 투표 제목
     
     @Column(nullable = false)
-    private List<String> esntlId; // 산책 코스 리스트
+    private String walkCourseName; // 산책 코스 이름
     
     @Column(nullable = false)
     private String memId;  // 투표 생성자 ID
 
     @Column(nullable = false)
     private boolean isOpenToAllFriends;  // 전체 친구 참여 여부
-    
-    @ElementCollection
-    private List<String> participantIds; // 참여자 ID 목록
 
     private LocalDateTime endTime;  // 투표 종료 시점 (선택적)
     
@@ -47,7 +44,12 @@ public class Vote {
 
     @Column(nullable = false)
     private boolean isEnded;  // 투표 종료 여부
+    
+    @ElementCollection
+    private List<String> participantIds; // 참여자 ID 목록
 
+    @ElementCollection
+    private List<Long> walkingCourseIds; // 산책로 ID 목록
 
     // 산책로별 투표 수를 관리하는 필드
     @ElementCollection

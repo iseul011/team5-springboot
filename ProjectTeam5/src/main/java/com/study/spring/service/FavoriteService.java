@@ -51,9 +51,14 @@ public class FavoriteService {
                 newRestaurant.setLatitude(latitude);  // 위도
                 newRestaurant.setLongitude(longitude);  // 경도
                 newRestaurant.setTelNo(telNo);  // 전화번호 저장
-                newRestaurant.setRating(0.0);  // 평점은 임시로 0으로 설정
+                //newRestaurant.setRating(0.0);  // 평점은 임시로 0으로 설정
                 return restaurantRepository.save(newRestaurant);
             });
+        
+        // 이미 해당 사용자의 찜 목록에 해당 음식점이 존재하는지 확인
+        if (favoriteRepository.existsByMemberAndRestaurant(member, restaurant)) {
+            throw new IllegalArgumentException("이미 찜한 음식점입니다.");  // 중복인 경우 예외 발생
+        }
 
         // 찜하기 로직
         Favorite favorite = new Favorite();

@@ -24,13 +24,14 @@ public class VoteController {
 	@Autowired
     private VoteService voteService;
 
+     
+
     // 투표 생성하기
     @PostMapping("/create")
     public Vote createVote(@RequestBody Vote vote) {
         return voteService.createVote(vote);
     }
-    
-    // 모든 산책로 목록 가져오기
+ // 모든 산책로 목록 가져오기
     @GetMapping("/walking/courses")
     public List<WalkingCourse> getAllWalkingCourses() {
         return voteService.getAllWalkingCourses();
@@ -67,5 +68,29 @@ public class VoteController {
     @PostMapping("/{voteId}/end")
     public Vote endVote(@PathVariable Long voteId) {
         return voteService.endVote(voteId);
+    }
+    
+    //자신의 투표만 조회
+    @GetMapping("/list/{memId}")
+    public List<Vote> getListMyVote(@PathVariable String memId) {
+        return voteService.getListMyVote(memId);
+    }
+    
+    //자신의 투표 끝난 것만 조회
+    @GetMapping("/closedList/myVotes/{memId}")
+    public List<Vote> getListEndedMyVote(@PathVariable String memId) {
+        return voteService.getListEndedMyVote(memId);
+    }
+    
+    //친구로 초대받은 투표만 조회
+    @GetMapping("/list/invitedVotes/{memId}")
+    public List<Vote> getListInvitedVote(@PathVariable String memId) {
+        return voteService.getListInvitedVote(memId);
+    }
+    
+    //친구로 초대받은 끝난 투표만 조회
+    @GetMapping("/closedList/invitedVotes/{memId}")
+    public List<Vote> getListEndedInvitedVote(@PathVariable String memId) {
+        return voteService.getListEndedInvitedVote(memId);
     }
 }
