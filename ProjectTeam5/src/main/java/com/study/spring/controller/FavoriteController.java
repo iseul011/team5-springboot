@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.study.spring.domain.Favorite;
 import com.study.spring.service.FavoriteService;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 @RestController
 @RequestMapping("/api/favorites")
 public class FavoriteController {
@@ -24,7 +27,7 @@ public class FavoriteController {
 
     // 찜하기 추가 API
     @PostMapping("/add")
-    public void addFavorite(
+    public ResponseEntity<?> addFavorite(
         @RequestParam String memId,  
         @RequestParam Long restaurantId,
         @RequestParam String name,
@@ -34,6 +37,14 @@ public class FavoriteController {
         @RequestParam Double longitude,
         @RequestParam(required = false) String telNo) {
         favoriteService.addFavorite(memId, restaurantId, name, address, foodType, latitude, longitude, telNo);
+        
+        boolean isAdded = favoriteService.addFavorite(memId, restaurantId, name, address, foodType, latitude, longitude, telNo);
+
+        if (isAdded) {
+            return ResponseEntity.ok("찜한 음식점에 추가되었습니다!");
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 찜한 음식점입니다.");
+        }
     }
 
     // 찜 리스트 조회 API (최신순으로 정렬)

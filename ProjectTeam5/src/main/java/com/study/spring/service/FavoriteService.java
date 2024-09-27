@@ -34,12 +34,19 @@ public class FavoriteService {
     }
 
     // 찜하기 추가 로직 수정
-    public void addFavorite(String memId, Long restaurantId, String name, String address, String foodType, Double latitude, Double longitude, String telNo) {
+    @Transactional
+    public boolean addFavorite(String memId, Long restaurantId, String name, String address, String foodType, Double latitude, Double longitude, String telNo) {
         // 사용자 확인
-        Member member = memberRepository.findByMemId(memId)
-            .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memId));
+    	 Member member = memberRepository.findByMemId(memId)
+    		        .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memId));
+        
+    	// 중복 확인
+	    if (favoriteRepository.existsByMemberAndRestaurant_rNum(member, restaurantId)) {
+	        return false; // 이미 존재하므로 추가하지 않음
+	    }
 
-        // 음식점이 DB에 존재하는지 확인
+
+        // 음식점 확인
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
             .orElseGet(() -> {
                 // DB에 없으면 새로운 Restaurant 생성 후 저장
@@ -51,14 +58,9 @@ public class FavoriteService {
                 newRestaurant.setLatitude(latitude);  // 위도
                 newRestaurant.setLongitude(longitude);  // 경도
                 newRestaurant.setTelNo(telNo);  // 전화번호 저장
-                //newRestaurant.setRating(0.0);  // 평점은 임시로 0으로 설정
+                newRestaurant.setRating(0.0);  // 평점은 임시로 0으로 설정
                 return restaurantRepository.save(newRestaurant);
             });
-        
-        // 이미 해당 사용자의 찜 목록에 해당 음식점이 존재하는지 확인
-        if (favoriteRepository.existsByMemberAndRestaurant(member, restaurant)) {
-            throw new IllegalArgumentException("이미 찜한 음식점입니다.");  // 중복인 경우 예외 발생
-        }
 
         // 찜하기 로직
         Favorite favorite = new Favorite();
@@ -66,7 +68,10 @@ public class FavoriteService {
         favorite.setRestaurant(restaurant);
         favorite.setFavoriteDate(LocalDateTime.now());
         favoriteRepository.save(favorite);
+
+        return true; // 성공적으로 추가
     }
+
 
     // 찜 삭제 기능
     @Transactional

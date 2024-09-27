@@ -37,8 +37,8 @@ function ClosedVotes({ hostId, setHostId }) {
     };
 
     // 투표 클릭 핸들러 (투표 상세 페이지 이동)
-    const handleVoteClick = (voteId) => {
-        navigate(`/vote/${voteId}`);
+    const handleVoteClick = (vote) => {
+        navigate(`/WalkingCourseVote/${localStorage.getItem('id')}/${vote.voteId}`);
     };
 
     // 투표 리스트로 돌아가는 버튼 핸들러
@@ -52,6 +52,10 @@ function ClosedVotes({ hostId, setHostId }) {
 
     return (
         <div className="vote-list-container">
+            {/* 투표 리스트로 돌아가는 버튼 */}
+            <button className="back-to-vote-list-button" onClick={handleBackToVoteList}>
+                투표 리스트로 돌아가기
+            </button>
             {/* 투표 목록 제목 및 필터링 라디오 버튼 */}
             <div className="vote-title-box">
                 <h2 className="vote-title">종료된 투표 목록</h2>
@@ -82,17 +86,14 @@ function ClosedVotes({ hostId, setHostId }) {
                     {votes.map((vote) => (
                         <li key={vote.id} className="vote-item">
                             <span className="vote-title-item">{vote.voteTitle}</span>
-                            <button className="vote-button" onClick={() => handleVoteClick(vote.id)}>결과 보기</button>
+                            <button className="vote-button" onClick={() => handleVoteClick(vote)}>결과 보기</button>
                         </li>
                     ))}
                 </ul>
             ) : (
                 <p className="no-vote-message">종료된 투표가 없습니다.</p>
             )}
-            {/* 투표 리스트로 돌아가는 버튼 */}
-            <button className="back-to-vote-list-button" onClick={handleBackToVoteList}>
-                투표 리스트로 돌아가기
-            </button>
+            
         </div>
     );
 }
