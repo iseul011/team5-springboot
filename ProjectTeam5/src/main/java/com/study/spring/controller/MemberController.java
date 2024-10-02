@@ -157,11 +157,21 @@ public class MemberController {
     }
     
  // 매일 자정에 실행 (cron 표현식: 초, 분, 시, 일, 월, 요일)
-    @Scheduled(cron = "0 20 10 * * *")
+    @Scheduled(cron = "0 15 13 * * *")
     public void resetDailyVisits() {
         memberService.resetDailyVisits();
     }
     
+    @PostMapping("/friendListOpen")
+    public void setFriendListOpen(@RequestParam String memId) {
+    	memberService.setFriendListOpen(memId);
+    }
+    
+    @GetMapping("/friendListOpen/status")
+    public boolean getFriendListOpen(@RequestParam String memId) {
+    	System.out.println("컨트롤러 친구목록 공개여부 : "+ memberService.getFriendListOpen(memId));
+    	return memberService.getFriendListOpen(memId);
+    }
     
     // 친구 아이디 존재 여부 확인 엔드포인트
     @GetMapping("/exists")
